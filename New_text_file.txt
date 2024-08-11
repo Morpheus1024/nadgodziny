@@ -1,0 +1,3 @@
+Rozszerzenia:
+tilig shell
+search light
