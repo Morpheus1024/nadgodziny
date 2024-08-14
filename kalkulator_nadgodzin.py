@@ -62,7 +62,7 @@ def oblicz_nadgodziny():
 # if __name__ == "__main__":
 with open("nadgodziny.json", "r") as f:
             json_data = json.load(f)
-print(json_data["godziny"], "h", json_data["minuty"], "min")
+#print(json_data["godziny"], "h", json_data["minuty"], "min")
 print("1. Policz nadgodziny")
 print("2. Odczyt nadgodzin z pliku")
 print("3. Odejmij nadgodziny")
@@ -73,6 +73,7 @@ match wybor:
     case "1":
         oblicz_nadgodziny()
     case "2":
+        print()
         print(json_data["godziny"], "h", json_data["minuty"], "min")
     case "3":
         czas = input("Podaj czas do odjęcia: ")
