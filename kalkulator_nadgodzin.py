@@ -69,12 +69,12 @@ print("3. Odejmij nadgodziny")
 
 wybor = input("Wybierz opcję: ")
 
-match wybor:
-    case "1":
-        oblicz_nadgodziny()
-    case "2":
-        print()
-        print(json_data["godziny"], "h", json_data["minuty"], "min")
-    case "3":
-        czas = input("Podaj czas do odjęcia: ")
-        odejmij_czas_z_jsona(czas)
+
+if wybor == "1":
+    oblicz_nadgodziny()
+elif wybor == "2":
+    print()
+    print(json_data["godziny"], "h", json_data["minuty"], "min")
+elif wybor == "3":
+    czas = input("Podaj czas do odjęcia: ")
+    odejmij_czas_z_jsona(czas)
