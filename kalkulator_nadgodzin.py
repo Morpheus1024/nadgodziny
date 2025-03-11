@@ -50,13 +50,14 @@ def oblicz_nadgodziny():
     print(f"Rozpoczęto o {godzina_ropoczecia}:{minuta_rozpoczecia}")
     print(f"Skończono o  {godzina_zakonczenia}:{minuta_zakonczenia}")
 
-    czas = (60 * int(godzina_zakonczenia) + int(minuta_zakonczenia)) - (60 * int(godzina_ropoczecia) + int(minuta_rozpoczecia)) - 8*60
+    czas = (60 * int(godzina_zakonczenia) + int(minuta_zakonczenia)) - (60 * int(godzina_ropoczecia) + int(minuta_rozpoczecia)) - (8*60)
 
     print(int(czas/60), "h", czas%60, "min")
     print("Czy dodać nadgodziny do pliku? T/N")
 
     if input() == "N" or input() == "n": 
         print("Nadal nic nie robie")
+        exit()
     else: dodaj_czas_do_jsona(czas)
 
 if __name__ == "__main__":
