@@ -23,8 +23,7 @@ def streamlit_interface():
     
     st.title('Kalkulator nadgodzin')
     
-    st.write('Odczytano:')
-    st.write(f'godziny: {data["godziny"]}, minuty: {data["minuty"]}')   
+    st.write(f'### Odczytano: godziny: {data["godziny"]}, minuty: {data["minuty"]}')
     st.write('---')
     
     col1, col2 = st.columns(2, gap="small")
@@ -50,13 +49,13 @@ def streamlit_interface():
             )
     
         czas = kn.oblicz_nadgodziny_datetime(czas_rospoczecia, czas_zakonczenia)
-        st.write(f'## Nadgodziny: {czas}')
+        nadgodziny_teskt = f'## Nadgodziny: {czas}' if czas.total_seconds()>0 else f'## Nadgodziny: {datetime.timedelta(seconds=0)}' 
+        st.write(nadgodziny_teskt)
         
         if st.button('Dodaj czas',use_container_width=True):
             hours = czas.seconds // 3600
             minutes = (czas.seconds % 3600) // 60
             czas = 60*hours + minutes
-            #st.write(czas)
             kn.dodaj_czas_do_jsona(czas = czas)
             st.success('Dodano czas')
             reload_interface()
@@ -81,6 +80,24 @@ def streamlit_interface():
             st.success('Odejmiono czas')
             reload_interface()
         
+        # st.write('---')
+        st.write('### Dodaj nadgodzin')
+        czas_do_dodania = st.time_input(
+            label = 'Czas do dodania',
+            key='czas_do_dodania_input',
+            step = 60,
+            value = datetime.time(1,0)
+            )
+        if st.button('Dodaj', type='primary', use_container_width=True):
+            czas = f'{czas_do_dodania.hour}:{czas_do_dodania.minute}'
+            
+            hours = czas.seconds // 3600
+            minutes = (czas.seconds % 3600) // 60
+            czas = 60*hours + minutes
+            kn.dodaj_czas_do_jsona(czas = czas)
+            st.success('Dodano czas')
+            reload_interface()
+
     st.write('---')
     
 
