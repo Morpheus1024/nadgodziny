@@ -1,5 +1,10 @@
 import json
 import datetime
+import db_connector as connector
+import streamlit as st
+
+db_url = st.secrets["SUPABASE_URL"]
+db_key = st.secrets["SUPABASE_KEY"]
 
 def load_data_from_json(filename: str = "nadgodziny.json"):
         with open(filename, "r") as f:
@@ -27,6 +32,12 @@ def dodaj_czas_do_jsona(czas, json_data = None):
         json.dump(json_data, f)
     
     print(json_data["godziny"], "h", json_data["minuty"], "min")
+    
+def dodaj_czas_do_db(czas: datetime.time) -> None:
+    oryginalny_czas = connector.read_from_db(db_url = db_url, db_key = db_key)
+
+    czas = datetime.time(oryginalny_czas.hour + czas.hour, oryginalny_czas.minute + czas.minute)
+    connector.load_to_db(time = czas, db_url = db_url, db_key = db_key)
 
 def odejmij_czas_z_jsona(czas): 
     
@@ -49,37 +60,44 @@ def odejmij_czas_z_jsona(czas):
         json.dump(json_data, f)
     
     print(json_data["godziny"], "h", json_data["minuty"], "min")
+
+def odejmij_czas_z_db(czas: datetime.time) -> None:
+    oryginalny_czas = connector.read_from_db(db_url = db_url, db_key = db_key)
+    czas = datetime.time(oryginalny_czas.hour - czas.hour, oryginalny_czas.minute - czas.minute)
+    connector.load_to_db(time = czas, db_url = db_url, db_key = db_key)
     
 
 
-def oblicz_nadgodziny(czas_rozpoczecia:str, czas_zakonczenia:str):
+def oblicz_nadgodziny(czas_rozpoczecia:str, czas_zakonczenia:str, debug = False):
 
-    godzina_ropoczecia, minuta_rozpoczecia = czas_rozpoczecia.split(":")
-    godzina_zakonczenia, minuta_zakonczenia = czas_zakonczenia.split(":")
+    godzina_ropoczecia, minuta_rozpoczecia = czas_rozpoczecia.hour, czas_rozpoczecia.minute
+    godzina_zakonczenia, minuta_zakonczenia = czas_zakonczenia.hour, czas_zakonczenia.minute
 
-    print(f"Rozpoczęto o {godzina_ropoczecia}:{minuta_rozpoczecia}")
-    print(f"Skończono o  {godzina_zakonczenia}:{minuta_zakonczenia}")
+    if debug:
+        print(f"Rozpoczęto o {godzina_ropoczecia}:{minuta_rozpoczecia}")
+        print(f"Skończono o  {godzina_zakonczenia}:{minuta_zakonczenia}")
 
     czas = (60 * int(godzina_zakonczenia) + int(minuta_zakonczenia)) - (60 * int(godzina_ropoczecia) + int(minuta_rozpoczecia)) - (8*60)
 
-    print(int(czas/60), "h", czas%60, "min")
-    print("Czy dodać nadgodziny do pliku? T/N")
-
+    if debug:
+        print(int(czas/60), "h", czas%60, "min")
+        print("Czy dodać nadgodziny do pliku? T/N")
+    
     if input() == "N" or input() == "n": 
         print("Nadal nic nie robie")
         exit()
     else: dodaj_czas_do_jsona(czas)
     
-def oblicz_nadgodziny_datetime(czas_rozpoczecia: datetime.time, czas_zakonczenia: datetime.time) -> datetime.timedelta:
+    
+def oblicz_nadgodziny_datetime(czas_rozpoczecia: datetime.time, czas_zakonczenia: datetime.time) -> datetime.time:
+    
     godzina_ropoczecia, minuta_rozpoczecia = czas_rozpoczecia.hour, czas_rozpoczecia.minute
     godzina_zakonczenia, minuta_zakonczenia = czas_zakonczenia.hour, czas_zakonczenia.minute
     
     czas = (60 * int(godzina_zakonczenia) + int(minuta_zakonczenia)) - (60 * int(godzina_ropoczecia) + int(minuta_rozpoczecia)) - (8*60)
-    czas = datetime.timedelta(minutes = czas)
+    czas = datetime.time(czas//60, czas%60)
     return czas
 
-
-    pass
 
 if __name__ == "__main__":
     with open("nadgodziny.json", "r") as f:
