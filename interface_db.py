@@ -25,7 +25,7 @@ def streamlit_interface():
     
     
     #data = kn.load_data_from_json()
-    czas = connector.read_from_db(db_url = db_url, db_key = db_key)
+    czas = connector.read_from_db(ID=1, db_url = db_url, db_key = db_key)
     
     st.title('Kalkulator nadgodzin')
     

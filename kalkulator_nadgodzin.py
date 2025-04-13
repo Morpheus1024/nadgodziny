@@ -6,6 +6,34 @@ import streamlit as st
 db_url = st.secrets["SUPABASE_URL"]
 db_key = st.secrets["SUPABASE_KEY"]
 
+def add_times(a: datetime, b: datetime) -> datetime.time:
+    """
+    Adds two datetime objects together.
+    """
+    # Convert to timedelta
+    datetime_a = datetime.datetime.combine(datetime.date.today(), a)
+    datetime_b = datetime.datetime.combine(datetime.date.today(), b)
+
+    # Oblicz różnicę między nimi (timedelta)
+    time_difference = datetime_b - datetime_a
+
+
+    combined_time_delta = datetime.timedelta(hours=a.hour, minutes=a.minute) + datetime.timedelta(hours=b.hour, minutes=b.minute)
+    return combined_time_delta  
+
+
+def subtract_times(a: datetime, b: datetime) -> datetime.time:
+    hours = a.hour
+    hours =- b.hour
+    minutes = a.minute
+    minutes =- b.minute
+    
+    if minutes < 0:
+        hours -= 1
+        minutes += 60
+        
+    return datetime.time(hours, minutes)
+
 def load_data_from_json(filename: str = "nadgodziny.json"):
         with open(filename, "r") as f:
             json_data = json.load(f)
@@ -35,9 +63,9 @@ def dodaj_czas_do_jsona(czas, json_data = None):
     
 def dodaj_czas_do_db(czas: datetime.time) -> None:
     oryginalny_czas = connector.read_from_db(db_url = db_url, db_key = db_key)
-
-    czas = datetime.time(oryginalny_czas.hour + czas.hour, oryginalny_czas.minute + czas.minute)
-    connector.load_to_db(time = czas, db_url = db_url, db_key = db_key)
+        
+    czas = add_times(oryginalny_czas, czas)
+    connector.load_to_db(ID=1,time = czas, db_url = db_url, db_key = db_key)
 
 def odejmij_czas_z_jsona(czas): 
     
@@ -63,7 +91,7 @@ def odejmij_czas_z_jsona(czas):
 
 def odejmij_czas_z_db(czas: datetime.time) -> None:
     oryginalny_czas = connector.read_from_db(db_url = db_url, db_key = db_key)
-    czas = datetime.time(oryginalny_czas.hour - czas.hour, oryginalny_czas.minute - czas.minute)
+    czas = subtract_times(oryginalny_czas, czas)
     connector.load_to_db(time = czas, db_url = db_url, db_key = db_key)
     
 

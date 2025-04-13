@@ -11,6 +11,10 @@ from supabase import create_client, Client
 
 def load_to_db(time: datetime.time, ID: int = 1, db_url: str = None, db_key: str = None):
     
+    if isinstance(time, datetime.timedelta):
+        print(time)
+        time = datetime.time(time.seconds // 3600, (time.seconds // 60) % 60)
+    
     hours = time.hour
     minutes = time.minute
     
