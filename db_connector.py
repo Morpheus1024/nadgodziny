@@ -23,8 +23,8 @@ def load_to_db(time: datetime.time, ID: int = 1, db_url: str = None, db_key: str
     supabase.table("nadgodziny").update({"godziny": hours}).eq("ID", ID).execute()
     supabase.table("nadgodziny").update({"minuty": minutes}).eq("ID", ID).execute()
     
-def read_from_db(ID: int = 1, db_url: str = None, db_key: str = None) -> datetime:
-    supabase: Client = create_client(db_url, db_key)
+def read_from_db(supabase: Client, ID: int = 1, db_url: str = None, db_key: str = None) -> datetime:
+    #supabase: Client = create_client(db_url, db_key)
 
     godziny = supabase.table("nadgodziny").select("godziny").eq("ID", ID).execute() # where ID = 1
     minuty = supabase.table("nadgodziny").select("minuty").eq("ID", ID).execute() # where ID = 1
@@ -34,4 +34,12 @@ def read_from_db(ID: int = 1, db_url: str = None, db_key: str = None) -> datetim
     minuty = int(minuty.data[0]["minuty"])
 
     return datetime.time(int(godziny), int(minuty))
+
+def connect_to_db(db_url: str = None, db_key: str = None) -> Client:
+    if db_url is None or db_key is None:
+        raise ValueError("Database URL and key must be provided.")
+
+    client = create_client(db_url, db_key)
+    
+    return client
 

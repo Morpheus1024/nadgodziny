@@ -94,8 +94,6 @@ def odejmij_czas_z_db(czas: datetime.time) -> None:
     czas = subtract_times(oryginalny_czas, czas)
     connector.load_to_db(time = czas, db_url = db_url, db_key = db_key)
     
-
-
 def oblicz_nadgodziny(czas_rozpoczecia:str, czas_zakonczenia:str, debug = False):
 
     godzina_ropoczecia, minuta_rozpoczecia = czas_rozpoczecia.hour, czas_rozpoczecia.minute
@@ -115,8 +113,7 @@ def oblicz_nadgodziny(czas_rozpoczecia:str, czas_zakonczenia:str, debug = False)
         print("Nadal nic nie robie")
         exit()
     else: dodaj_czas_do_jsona(czas)
-    
-    
+     
 def oblicz_nadgodziny_datetime(czas_rozpoczecia: datetime.time, czas_zakonczenia: datetime.time) -> datetime.time:
     
     godzina_ropoczecia, minuta_rozpoczecia = czas_rozpoczecia.hour, czas_rozpoczecia.minute
@@ -125,7 +122,6 @@ def oblicz_nadgodziny_datetime(czas_rozpoczecia: datetime.time, czas_zakonczenia
     czas = (60 * int(godzina_zakonczenia) + int(minuta_zakonczenia)) - (60 * int(godzina_ropoczecia) + int(minuta_rozpoczecia)) - (8*60)
     czas = datetime.time(czas//60, czas%60)
     return czas
-
 
 if __name__ == "__main__":
     with open("nadgodziny.json", "r") as f:

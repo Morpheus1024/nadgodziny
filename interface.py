@@ -2,10 +2,13 @@ import time
 import datetime
 import streamlit as st
 import kalkulator_nadgodzin as kn
+import db_connector as connector
 
 
 db_url = st.secrets["SUPABASE_URL"]
 db_key = st.secrets["SUPABASE_KEY"]
+
+
 
 def reload_interface():
             reload_text = st.text('Reloading in 3 seconds...')
@@ -20,7 +23,11 @@ def reload_interface():
             st.rerun()  
             
 
-def streamlit_interface():
+def streamlit_interface(db_client):
+    
+    if db_client is None:
+        st.error("Nie można połączyć się z bazą danych.")
+        return
     
     
     data = kn.load_data_from_json()
@@ -53,7 +60,7 @@ def streamlit_interface():
             )
     
         czas = kn.oblicz_nadgodziny_datetime(czas_rospoczecia, czas_zakonczenia)
-        nadgodziny_teskt = f'## Nadgodziny: {czas}' if czas.total_seconds()>0 else f'## Nadgodziny: {datetime.timedelta(seconds=0)}' 
+        nadgodziny_teskt = f'## Nadgodziny: {czas}' if czas.second>0 else f'## Nadgodziny: {datetime.timedelta(seconds=0)}' 
         st.write(nadgodziny_teskt)
         
         if st.button('Dodaj czas',use_container_width=True):
@@ -107,7 +114,9 @@ def streamlit_interface():
 
     
 def main():
-    streamlit_interface()
+    
+    supabase_client = connector.connect_to_db(db_url=db_url, db_key=db_key)
+    streamlit_interface(supabase_client)
     
 if __name__ == '__main__':
     main()
